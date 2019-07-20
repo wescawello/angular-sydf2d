@@ -1,4 +1,5 @@
-<hello name="{{ name }}"></hello>
-<p>
-  Start editing to see some magic happen :)
-</p>
+<!--The content below is only a placeholder and can be replaced.-->
+<app-nav-menu [ngClass]="{fixedHeader:isSticky}" *ngIf="ly.showNav|async"></app-nav-menu>
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
