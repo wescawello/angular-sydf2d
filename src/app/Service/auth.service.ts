@@ -5,7 +5,8 @@ import { BehaviorSubject, merge, Observable, Subject, fromEvent, observable, of,
 import { tap, map, filter,take, takeUntil, bufferTime, switchMap,distinctUntilChanged } from 'rxjs/operators';
 import { IMessage } from '../Model/commonModel';
 import { Router } from '@angular/router';
-
+import { isArray } from 'ngx-bootstrap';
+ 
 type vf = firebase.User & { Status: string }
 @Injectable({
   providedIn: 'root'
@@ -115,23 +116,20 @@ export class AuthService {
 
           // this.rewait = this.idleaction.subscribe(async x => await this.offFn(x));
           // this.rewaitx =
-          this.useronline$.pipe(distinctUntilChanged()).subscribe(b => {
-
-            if (this.rewait) {
-              this.rewait.unsubscribe();
-            }
-            if(b){
-this.rewait=exitaction.pipe(bufferTime(15 * 1000), filter(arr => arr.length === 0), takeUntil(this._ngUnsubscribe)).subscribe(async x => await this.offFn(x));
-
-            }else{
-this.rewait= exitaction.pipe(take(1), takeUntil(this._ngUnsubscribe)).subscribe(async x => await this.onFn(x));
-
-            }
+       this.useronline$.pipe(distinctUntilChanged(), switchMap(b => {
+                return b ?
+                    exitaction.pipe(bufferTime(15 * 1000), filter(arr => arr.length === 0), takeUntil(this._ngUnsubscribe))
+                    :
+                    exitaction.pipe(take(1), takeUntil(this._ngUnsubscribe));
 
 
 
-          });
 
+            })).subscribe(async x => isArray(x) ? await this.offFn(x) : await this.onFn(x) 
+
+
+
+          );
 
 
 
